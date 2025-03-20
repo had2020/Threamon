@@ -324,11 +324,10 @@ fn main() {
                     }
                 }
                 if key_press(&app, "f") {
-                    //line(Position { x: 0, y: 0 }, "You gave up! Quit (q)", "red");
+                    let mut current_enemy = catalog[battle_id as usize].clone();
 
                     while true {
                         let hp_message = format!("Your Hp: {}", save.creatures[0].health);
-                        line(Position { x: 7, y: 0 }, &hp_message, "green");
 
                         if save.creatures[0].health < catalog[battle_id as usize].attack {
                             clear();
@@ -342,6 +341,8 @@ fn main() {
                             "🏃Run (r), 🥊Attack (a), ⭐️Special (s)",
                             "",
                         );
+                        line(Position { x: 8, y: 0 }, &hp_message, "green");
+
                         if key_press(&app, "r") {
                             clear();
                             let mut rng = rand::rng();
@@ -351,8 +352,20 @@ fn main() {
                                 line(Position { x: 0, y: 0 }, "☠️ You were died! Quit (q)", "red");
                             }
                         }
-                        if key_press(&app, "a") {}
-                        if key_press(&app, "s") {}
+                        if key_press(&app, "a") {
+                            current_enemy.health = current_enemy.health - save.creatures[0].attack;
+                            let enemy_health = format!("Hp: {}", current_enemy.health,);
+                            line(Position { x: 2, y: 0 }, &enemy_health, "green");
+                        }
+                        if key_press(&app, "s") {
+                            current_enemy.health = current_enemy.health - save.creatures[0].special;
+                            let enemy_health = format!("Hp: {}", current_enemy.health,);
+                            line(Position { x: 2, y: 0 }, &enemy_health, "green");
+                        }
+                        if key_press(&app, "q") {
+                            clear();
+                            break;
+                        }
                     }
                 }
             }
