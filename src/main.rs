@@ -325,9 +325,17 @@ fn main() {
                 }
                 if key_press(&app, "f") {
                     line(Position { x: 0, y: 0 }, "You gave up! Quit (q)", "red");
-                    /* futher process
+                    /*
                     while true {
-                        if save.creatures[0].health > catalog[battle_id].attack
+                        let message = format!("{}", name);
+                        line(Position { x: 8, y: 0 }, "", "red");
+
+                        if save.creatures[0].health > catalog[battle_id as usize].attack {
+                            clear();
+                            line(Position { x: 0, y: 0 }, "😞 You lost! Quit (q)", "red");
+                            player_in_battle = false;
+                            break;
+                        }
                     }
                     */
                 }
