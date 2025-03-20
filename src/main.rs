@@ -19,12 +19,13 @@ struct Item {
 }
 
 #[derive(Clone, Debug)]
-struct Player_data {
+struct PlayerData {
     name: String,
     creatures: Vec<Creature>,
     xp: f32,
     inventory: Vec<Item>,
     pos: Pixel_Position,
+    world_data: WorldData,
 }
 
 #[derive(Clone, Debug)]
@@ -34,23 +35,27 @@ struct Pixel_Position {
 }
 
 #[derive(Clone, Debug)]
-struct World_data {
-    x: usize,
-    y: usize,
+struct Pixel {
+    id: u32,
+}
+
+#[derive(Clone, Debug)]
+struct WorldData {
+    chunk: Vec<Vec<Pixel>>,
 }
 
 fn print_keybind() {
     line(Position { x: 0, y: 0 }, "i - 💰 Inventory", "blue");
-    line(Position { x: 0, y: 20 }, "m - 🏃 Move", "red");
-    line(Position { x: 0, y: 32 }, "s - 🛒 Shop", "yellow");
+    line(Position { x: 0, y: 20 }, "WASD - 🏃 Move", "red");
+    line(Position { x: 0, y: 36 }, "s - 🛒 Shop", "yellow");
 }
 
-fn render_world(player_position: Pixel_Position, world_data: World_data) {
+fn render_world(player_position: Pixel_Position, world_data: WorldData) {
     let mut current_pixel: Pixel_Position = Pixel_Position { x: 0, y: 0 };
-    for row in 0..player_position.x {
+    for row in 0..world_data.chunk.len() {
         current_pixel.x = row + 1;
-        for col in 0..player_position.y {
-            current_pixel.y = col + 1;
+        for col in 0..world_data.chunk[1].len() {
+            current_pixel.y = col;
             line(
                 Position {
                     x: current_pixel.x,
@@ -61,6 +66,13 @@ fn render_world(player_position: Pixel_Position, world_data: World_data) {
             );
         }
     }
+}
+
+fn world_gen() {
+    let world_size = (10, 10);
+    let mut rng = rand::rng();
+    let x_value = rng.random_range(0..10);
+    let y_value = rng.random_range(0..10);
 }
 
 fn main() {
@@ -97,12 +109,13 @@ fn main() {
     let mut playing: bool = false;
     let mut has_starter: bool = false;
 
-    let mut save = Player_data {
+    let mut save = PlayerData {
         name: "".to_string(),
         creatures: vec![],
         xp: 0.0,
         inventory: vec![],
         pos: Pixel_Position { x: 0, y: 0 },
+        world_data: WorldData { chuck: vec![] },
     };
 
     clear();
@@ -201,9 +214,7 @@ fn main() {
         if playing && has_starter {
             clear();
             print_keybind();
-            if key_press(&app, "m") {
-                render_world(save.pos.clone());
-            }
+            render_world(save.pos.clone(), save.world_data.clone());
         }
     }
 
