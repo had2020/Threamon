@@ -144,6 +144,7 @@ fn main() {
     };
 
     let mut player_in_battle: bool = false;
+    let mut battle_id: u8 = 4; // <=4 is none
 
     clear();
     let mut app = App::new();
@@ -284,8 +285,16 @@ fn main() {
             if player_in_battle {
                 clear();
 
-                let mut rng = rand::rng();
-                let creature_index = rng.random_range(0..catalog.len());
+                let creature_index: usize;
+
+                if battle_id == 4 {
+                    let mut rng = rand::rng();
+                    creature_index = rng.random_range(0..catalog.len());
+                    battle_id = creature_index as u8;
+                } else {
+                    creature_index = battle_id as usize;
+                }
+
                 let name = format!(
                     "You encontered {} {}",
                     catalog[creature_index].emoji, catalog[creature_index].name,
@@ -304,6 +313,19 @@ fn main() {
                 line(Position { x: 6, y: 0 }, &power, "yellow");
 
                 line(Position { x: 7, y: 0 }, "🏃Run (r), 🥊Fight (f)", "");
+
+                if key_press(&app, "r") {
+                    clear();
+                    let mut rng = rand::rng();
+                    if rng.random_range(0..2) == 1 {
+                        player_in_battle = false;
+                    } else {
+                        line(Position { x: 0, y: 0 }, "☠️ You were died! Quit (q)", "red");
+                    }
+                }
+                if key_press(&app, "f") {
+                    line(Position { x: 0, y: 0 }, "You gave up! Quit (q)", "red");
+                }
             }
         }
     }
