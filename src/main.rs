@@ -240,16 +240,16 @@ fn main() {
             print_keybind();
             render_world(save.pos.clone(), save.world_data.clone());
             if key_press(&app, "w") {
-                save.pos.x += 1;
-            }
-            if key_press(&app, "a") {
-                save.pos.y += 1;
-            }
-            if key_press(&app, "s") {
                 save.pos.x -= 1;
             }
-            if key_press(&app, "d") {
+            if key_press(&app, "a") {
                 save.pos.y -= 1;
+            }
+            if key_press(&app, "s") {
+                save.pos.x += 1;
+            }
+            if key_press(&app, "d") {
+                save.pos.y += 1;
             }
         }
     }
