@@ -1,3 +1,5 @@
+use std::f64::MIN_POSITIVE;
+
 use rand::Rng;
 use TerimalRtdm::*;
 
@@ -141,6 +143,8 @@ fn main() {
         world_data: WorldData { chunk: vec![] },
     };
 
+    let mut player_in_battle: bool = false;
+
     clear();
     let mut app = App::new();
 
@@ -239,17 +243,55 @@ fn main() {
             clear();
             print_keybind();
             render_world(save.pos.clone(), save.world_data.clone());
+
+            let mut moved_flag: bool = false;
             if key_press(&app, "w") {
                 save.pos.x -= 1;
+                moved_flag = true;
             }
             if key_press(&app, "a") {
                 save.pos.y -= 1;
+                moved_flag = true;
             }
             if key_press(&app, "s") {
                 save.pos.x += 1;
+                moved_flag = true;
             }
             if key_press(&app, "d") {
                 save.pos.y += 1;
+                moved_flag = true;
+            }
+
+            if moved_flag {
+                let mut rng = rand::rng();
+                if save.world_data.chunk[save.pos.x.clone()][save.pos.y.clone()].id == 1 {
+                    if rng.random_range(1..5) == 3 {
+                        player_in_battle = true;
+                    }
+                }
+                if save.world_data.chunk[save.pos.x.clone()][save.pos.y.clone()].id == 2 {
+                    if rng.random_range(1..3) == 2 {
+                        player_in_battle = true;
+                    }
+                }
+                if save.world_data.chunk[save.pos.x.clone()][save.pos.y.clone()].id == 3 {
+                    if rng.random_range(1..2) == 1 {
+                        player_in_battle = true;
+                    }
+                }
+            }
+
+            if player_in_battle {
+                clear();
+
+                let mut rng = rand::rng();
+                let creature_index = rng.random_range(0..catalog.len());
+
+                line(
+                    Position { x: 0, y: 0 },
+                    "You enconterd {catalog[creature_index]}!",
+                    "red",
+                );
             }
         }
     }
