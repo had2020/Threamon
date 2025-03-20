@@ -113,7 +113,7 @@ fn main() {
         },
         Creature {
             name: "Troy".to_string(),
-            emoji: "🧞‍♂️".to_string(),
+            emoji: "🧙‍♂️".to_string(),
             health: 5.0,
             xp: 0.0,
             attack: 3.0,
@@ -177,7 +177,7 @@ fn main() {
             line(Position { x: 0, y: 0 }, "Choose your starter! 🐣", "");
             line(Position { x: 3, y: 0 }, "👞 Tikashoe", "red");
             line(Position { x: 3, y: 20 }, "Enjoy balance? ⚖️ (j)", "red");
-            line(Position { x: 5, y: 0 }, "🧞‍♂️ Troy", "blue");
+            line(Position { x: 5, y: 0 }, "🧙‍♂️ Troy", "blue");
             line(
                 Position { x: 5, y: 20 },
                 "Do you prefer war? 🔫 (k)",
@@ -245,37 +245,37 @@ fn main() {
             render_world(save.pos.clone(), save.world_data.clone());
 
             let mut moved_flag: bool = false;
-            if key_press(&app, "w") {
+            if key_press(&app, "w") && !player_in_battle {
                 save.pos.x -= 1;
                 moved_flag = true;
             }
-            if key_press(&app, "a") {
+            if key_press(&app, "a") && !player_in_battle {
                 save.pos.y -= 1;
                 moved_flag = true;
             }
-            if key_press(&app, "s") {
+            if key_press(&app, "s") && !player_in_battle {
                 save.pos.x += 1;
                 moved_flag = true;
             }
-            if key_press(&app, "d") {
+            if key_press(&app, "d") && !player_in_battle {
                 save.pos.y += 1;
                 moved_flag = true;
             }
 
-            if moved_flag {
+            if moved_flag && !player_in_battle {
                 let mut rng = rand::rng();
                 if save.world_data.chunk[save.pos.x.clone()][save.pos.y.clone()].id == 1 {
-                    if rng.random_range(1..5) == 3 {
+                    if rng.random_range(1..20) == 3 {
                         player_in_battle = true;
                     }
                 }
                 if save.world_data.chunk[save.pos.x.clone()][save.pos.y.clone()].id == 2 {
-                    if rng.random_range(1..3) == 2 {
+                    if rng.random_range(1..10) == 2 {
                         player_in_battle = true;
                     }
                 }
                 if save.world_data.chunk[save.pos.x.clone()][save.pos.y.clone()].id == 3 {
-                    if rng.random_range(1..2) == 1 {
+                    if rng.random_range(1..5) == 1 {
                         player_in_battle = true;
                     }
                 }
@@ -286,12 +286,24 @@ fn main() {
 
                 let mut rng = rand::rng();
                 let creature_index = rng.random_range(0..catalog.len());
-
-                line(
-                    Position { x: 0, y: 0 },
-                    "You enconterd {catalog[creature_index]}!",
-                    "red",
+                let name = format!(
+                    "You encontered {} {}",
+                    catalog[creature_index].emoji, catalog[creature_index].name,
                 );
+                let health = format!("Hp: {}", catalog[creature_index].health,);
+                let xp = format!("Xp: {}", catalog[creature_index].xp,);
+                let attack = format!("Attack: {}", catalog[creature_index].attack,);
+                let special = format!("Special: {}", catalog[creature_index].special,);
+                let power = format!("Power: {}", catalog[creature_index].power,);
+
+                line(Position { x: 0, y: 0 }, &name, "");
+                line(Position { x: 2, y: 0 }, &health, "green");
+                line(Position { x: 3, y: 0 }, &xp, "blue");
+                line(Position { x: 4, y: 0 }, &attack, "red");
+                line(Position { x: 5, y: 0 }, &special, "red");
+                line(Position { x: 6, y: 0 }, &power, "yellow");
+
+                line(Position { x: 7, y: 0 }, "🏃Run (r), 🥊Fight (f)", "");
             }
         }
     }
