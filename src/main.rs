@@ -145,6 +145,8 @@ fn main() {
 
     let mut player_in_battle: bool = false;
     let mut battle_id: u8 = 4; // <=4 is none
+    let mut decided_fight: bool = false;
+    let mut current_enemy = catalog[0].clone();
 
     clear();
     let mut app = App::new();
@@ -324,48 +326,59 @@ fn main() {
                     }
                 }
                 if key_press(&app, "f") {
-                    let mut current_enemy = catalog[battle_id as usize].clone();
+                    current_enemy = catalog[battle_id as usize].clone();
+                    decided_fight = true;
+                }
 
-                    while true {
-                        let hp_message = format!("Your Hp: {}", save.creatures[0].health);
+                if decided_fight {
+                    let hp_message = format!("Your Hp: {}", save.creatures[0].health);
 
-                        if save.creatures[0].health < catalog[battle_id as usize].attack {
-                            clear();
-                            line(Position { x: 0, y: 0 }, "😞 You lost! Quit (q)", "red");
+                    if save.creatures[0].health < catalog[battle_id as usize].attack {
+                        clear();
+                        line(Position { x: 0, y: 0 }, "😞 You lost! Quit (q)", "red");
+                        player_in_battle = false;
+                        break;
+                    } else {
+                        save.creatures[0].health =
+                            save.creatures[0].health - catalog[battle_id as usize].attack;
+                    }
+
+                    line(
+                        Position { x: 7, y: 0 },
+                        "🏃Run (r), 🥊Attack (a), ⭐️Special (s)",
+                        "",
+                    );
+                    line(Position { x: 8, y: 0 }, &hp_message, "green");
+
+                    if key_press(&app, "r") {
+                        clear();
+                        let mut rng = rand::rng();
+                        if rng.random_range(0..2) == 1 {
                             player_in_battle = false;
-                            break;
+                        } else {
+                            line(Position { x: 0, y: 0 }, "☠️ You were died! Quit (q)", "red");
                         }
-
-                        line(
-                            Position { x: 7, y: 0 },
-                            "🏃Run (r), 🥊Attack (a), ⭐️Special (s)",
-                            "",
-                        );
-                        line(Position { x: 8, y: 0 }, &hp_message, "green");
-
-                        if key_press(&app, "r") {
-                            clear();
-                            let mut rng = rand::rng();
-                            if rng.random_range(0..2) == 1 {
-                                player_in_battle = false;
-                            } else {
-                                line(Position { x: 0, y: 0 }, "☠️ You were died! Quit (q)", "red");
-                            }
-                        }
-                        if key_press(&app, "a") {
-                            current_enemy.health = current_enemy.health - save.creatures[0].attack;
-                            let enemy_health = format!("Hp: {}", current_enemy.health,);
-                            line(Position { x: 2, y: 0 }, &enemy_health, "green");
-                        }
-                        if key_press(&app, "s") {
-                            current_enemy.health = current_enemy.health - save.creatures[0].special;
-                            let enemy_health = format!("Hp: {}", current_enemy.health,);
-                            line(Position { x: 2, y: 0 }, &enemy_health, "green");
-                        }
-                        if key_press(&app, "q") {
-                            clear();
-                            break;
-                        }
+                        decided_fight = false;
+                    }
+                    if key_press(&app, "a") {
+                        current_enemy.health = current_enemy.health - save.creatures[0].attack;
+                        let enemy_health = format!("Hp: {}", current_enemy.health,);
+                        line(Position { x: 2, y: 0 }, &enemy_health, "green");
+                    }
+                    if key_press(&app, "s") {
+                        current_enemy.health = current_enemy.health - save.creatures[0].special;
+                        let enemy_health = format!("Hp: {}", current_enemy.health,);
+                        line(Position { x: 2, y: 0 }, &enemy_health, "green");
+                    }
+                    if key_press(&app, "q") {
+                        decided_fight = false;
+                        clear();
+                        break;
+                    }
+                    if current_enemy.health < 0.0 {
+                        decided_fight = false;
+                        clear();
+                        break;
                     }
                 }
             }
