@@ -325,6 +325,11 @@ fn main() {
                 }
                 if key_press(&app, "f") {
                     line(Position { x: 0, y: 0 }, "You gave up! Quit (q)", "red");
+                    /* futher process
+                    while true {
+                        if save.creatures[0].health > catalog[battle_id].attack
+                    }
+                    */
                 }
             }
         }
