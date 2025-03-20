@@ -11,7 +11,6 @@ struct Creature {
 }
 
 struct Item {
-    id: f32,
     name: String,
     health_benefit: f32,
     cost: f32,
@@ -59,10 +58,17 @@ fn main() {
             special: 4.0,
             power: 10.0,
         },
-        ]
+    ];
 
     let mut playing: bool = false;
     let mut has_starter: bool = false;
+
+    let save = Player_data {
+        name: "".to_string(),
+        creatures: vec![],
+        xp: 0.0,
+        inventory: vec![],
+    };
 
     clear();
     let mut app = App::new();
@@ -86,14 +92,53 @@ fn main() {
             print_keybind();
             playing = true;
         }
+
         if playing && !has_starter {
-            line(Position { x: 0, y: 0 }, "Choose your pal!", "white");
-            line(Position { x: 1, y: 0 }, "👞 Tikashoe", "red");
-            line(Position { x: 1, y: 20 }, "Enjoy balance? ⚖️ (j)", "red");
-            line(Position { x: 2, y: 0 }, "🧞‍♂️ Troy", "blue");
-            line(Position { x: 2, y: 20 }, "Do you prefer war? 🔫 (k)", "blue");
-            line(Position { x: 3, y: 0 }, "🐮 Dalius", "yellow");
-            line(Position { x: 3, y: 20 }, "Are you a coward? (l)", "yellow");
+            line(Position { x: 2, y: 0 }, "Choose your starter! 🐣", "white");
+            line(Position { x: 3, y: 0 }, "👞 Tikashoe", "red");
+            line(Position { x: 3, y: 20 }, "Enjoy balance? ⚖️ (j)", "red");
+            line(Position { x: 5, y: 0 }, "🧞‍♂️ Troy", "blue");
+            line(
+                Position { x: 5, y: 20 },
+                "Do you prefer war? 🔫 (k)",
+                "blue",
+            );
+            line(Position { x: 7, y: 0 }, "🐮 Dalius", "yellow");
+            line(
+                Position { x: 7, y: 20 },
+                "Are you a coward? 😬(l)",
+                "yellow",
+            );
+
+            // option check
+            if key_press(&app, "j") {
+                has_starter = true;
+                clear();
+
+                line(
+                    Position { x: 2, y: 0 },
+                    "I see what your made of! 🐣",
+                    "white",
+                );
+            }
+            if key_press(&app, "k") {
+                has_starter = true;
+                clear();
+                line(
+                    Position { x: 2, y: 0 },
+                    "I see what your made of! 🐣",
+                    "white",
+                );
+            }
+            if key_press(&app, "l") {
+                has_starter = true;
+                clear();
+                line(
+                    Position { x: 2, y: 0 },
+                    "I see what your made of! 🐣",
+                    "white",
+                );
+            }
         }
     }
 
