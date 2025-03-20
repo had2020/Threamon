@@ -1,3 +1,4 @@
+use rand::Rng;
 use TerimalRtdm::*;
 
 #[derive(Clone, Debug)]
@@ -36,7 +37,7 @@ struct Pixel_Position {
 
 #[derive(Clone, Debug)]
 struct Pixel {
-    id: u32,
+    id: usize,
 }
 
 #[derive(Clone, Debug)]
@@ -53,26 +54,48 @@ fn print_keybind() {
 fn render_world(player_position: Pixel_Position, world_data: WorldData) {
     let mut current_pixel: Pixel_Position = Pixel_Position { x: 0, y: 0 };
     for row in 0..world_data.chunk.len() {
+        //println!("{:?}", current_pixel);
         current_pixel.x = row + 1;
         for col in 0..world_data.chunk[1].len() {
             current_pixel.y = col;
+            let color: &str = match world_data.chunk[row][col].id {
+                1 => "green",
+                2 => "yellow",
+                3 => "red",
+                _ => "", // white if error
+            };
             line(
                 Position {
-                    x: current_pixel.x,
+                    x: current_pixel.x + 1, // for top menu offeset
                     y: current_pixel.y,
                 },
-                "X",
-                "green",
+                "π",
+                color,
             );
+            if player_position.x == current_pixel.x && player_position.y == current_pixel.y {
+                line(
+                    Position {
+                        x: current_pixel.x + 1,
+                        y: current_pixel.y,
+                    },
+                    "8",
+                    "magenta",
+                );
+            }
         }
     }
 }
 
-fn world_gen() {
-    let world_size = (10, 10);
-    let mut rng = rand::rng();
-    let x_value = rng.random_range(0..10);
-    let y_value = rng.random_range(0..10);
+fn world_gen(player_data: &mut PlayerData) {
+    let world_size = Position { x: 10, y: 50 };
+    for row in 0..world_size.x {
+        player_data.world_data.chunk.push(vec![]);
+        for col in 0..world_size.y {
+            let mut rng = rand::rng();
+            let value = rng.random_range(1..4);
+            player_data.world_data.chunk[row].push(Pixel { id: value });
+        }
+    }
 }
 
 fn main() {
@@ -114,8 +137,8 @@ fn main() {
         creatures: vec![],
         xp: 0.0,
         inventory: vec![],
-        pos: Pixel_Position { x: 0, y: 0 },
-        world_data: WorldData { chuck: vec![] },
+        pos: Pixel_Position { x: 1, y: 1 },
+        world_data: WorldData { chunk: vec![] },
     };
 
     clear();
@@ -143,10 +166,11 @@ fn main() {
 
         if key_press(&app, "p") {
             playing = true;
+            world_gen(&mut save);
         }
 
         if playing && !has_starter {
-            line(Position { x: 2, y: 0 }, "Choose your starter! 🐣", "white");
+            line(Position { x: 0, y: 0 }, "Choose your starter! 🐣", "");
             line(Position { x: 3, y: 0 }, "👞 Tikashoe", "red");
             line(Position { x: 3, y: 20 }, "Enjoy balance? ⚖️ (j)", "red");
             line(Position { x: 5, y: 0 }, "🧞‍♂️ Troy", "blue");
@@ -215,6 +239,18 @@ fn main() {
             clear();
             print_keybind();
             render_world(save.pos.clone(), save.world_data.clone());
+            if key_press(&app, "w") {
+                save.pos.x += 1;
+            }
+            if key_press(&app, "a") {
+                save.pos.y += 1;
+            }
+            if key_press(&app, "s") {
+                save.pos.x -= 1;
+            }
+            if key_press(&app, "d") {
+                save.pos.y -= 1;
+            }
         }
     }
 
