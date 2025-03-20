@@ -324,20 +324,36 @@ fn main() {
                     }
                 }
                 if key_press(&app, "f") {
-                    line(Position { x: 0, y: 0 }, "You gave up! Quit (q)", "red");
-                    /*
-                    while true {
-                        let message = format!("{}", name);
-                        line(Position { x: 8, y: 0 }, "", "red");
+                    //line(Position { x: 0, y: 0 }, "You gave up! Quit (q)", "red");
 
-                        if save.creatures[0].health > catalog[battle_id as usize].attack {
+                    while true {
+                        let hp_message = format!("Your Hp: {}", save.creatures[0].health);
+                        line(Position { x: 7, y: 0 }, &hp_message, "green");
+
+                        if save.creatures[0].health < catalog[battle_id as usize].attack {
                             clear();
                             line(Position { x: 0, y: 0 }, "😞 You lost! Quit (q)", "red");
                             player_in_battle = false;
                             break;
                         }
+
+                        line(
+                            Position { x: 7, y: 0 },
+                            "🏃Run (r), 🥊Attack (a), ⭐️Special (s)",
+                            "",
+                        );
+                        if key_press(&app, "r") {
+                            clear();
+                            let mut rng = rand::rng();
+                            if rng.random_range(0..2) == 1 {
+                                player_in_battle = false;
+                            } else {
+                                line(Position { x: 0, y: 0 }, "☠️ You were died! Quit (q)", "red");
+                            }
+                        }
+                        if key_press(&app, "a") {}
+                        if key_press(&app, "s") {}
                     }
-                    */
                 }
             }
         }
