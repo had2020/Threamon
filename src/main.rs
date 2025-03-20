@@ -1,5 +1,6 @@
 use TerimalRtdm::*;
 
+#[derive(Clone, Debug)]
 struct Creature {
     name: String,
     emoji: String,
@@ -10,23 +11,56 @@ struct Creature {
     power: f32,
 }
 
+#[derive(Clone, Debug)]
 struct Item {
     name: String,
     health_benefit: f32,
     cost: f32,
 }
 
+#[derive(Clone, Debug)]
 struct Player_data {
     name: String,
     creatures: Vec<Creature>,
     xp: f32,
     inventory: Vec<Item>,
+    pos: Pixel_Position,
+}
+
+#[derive(Clone, Debug)]
+struct Pixel_Position {
+    x: usize,
+    y: usize,
+}
+
+#[derive(Clone, Debug)]
+struct World_data {
+    x: usize,
+    y: usize,
 }
 
 fn print_keybind() {
     line(Position { x: 0, y: 0 }, "i - 💰 Inventory", "blue");
     line(Position { x: 0, y: 20 }, "m - 🏃 Move", "red");
     line(Position { x: 0, y: 32 }, "s - 🛒 Shop", "yellow");
+}
+
+fn render_world(player_position: Pixel_Position, world_data: World_data) {
+    let mut current_pixel: Pixel_Position = Pixel_Position { x: 0, y: 0 };
+    for row in 0..player_position.x {
+        current_pixel.x = row + 1;
+        for col in 0..player_position.y {
+            current_pixel.y = col + 1;
+            line(
+                Position {
+                    x: current_pixel.x,
+                    y: current_pixel.y,
+                },
+                "X",
+                "green",
+            );
+        }
+    }
 }
 
 fn main() {
@@ -63,17 +97,23 @@ fn main() {
     let mut playing: bool = false;
     let mut has_starter: bool = false;
 
-    let save = Player_data {
+    let mut save = Player_data {
         name: "".to_string(),
         creatures: vec![],
         xp: 0.0,
         inventory: vec![],
+        pos: Pixel_Position { x: 0, y: 0 },
     };
 
     clear();
     let mut app = App::new();
 
+    raw_line("________________________________________________");
+    raw_line("Welcome to Threamon, the next 80s creature game!");
+    raw_line("________________________________________________");
+    raw_line(" ");
     raw_line("q 👈 to quit 🏃");
+    raw_line(" ");
     raw_line("p 👈 to play 🎲");
 
     raw_mode(true);
@@ -89,7 +129,6 @@ fn main() {
         }
 
         if key_press(&app, "p") {
-            print_keybind();
             playing = true;
         }
 
@@ -114,30 +153,56 @@ fn main() {
             if key_press(&app, "j") {
                 has_starter = true;
                 clear();
-
+                save.creatures.push(catalog[0].clone());
                 line(
                     Position { x: 2, y: 0 },
-                    "I see what your made of! 🐣",
-                    "white",
+                    "👞 Tikashoe added to bag.",
+                    "green",
                 );
+                line(
+                    Position { x: 3, y: 0 },
+                    "Press m to start your journey! 🌇",
+                    "yellow",
+                );
+                if key_press(&app, "m") {
+                    has_starter = true;
+                }
             }
             if key_press(&app, "k") {
                 has_starter = true;
                 clear();
+                save.creatures.push(catalog[1].clone());
+                line(Position { x: 2, y: 0 }, "🧞‍♂️ Troy added to bag.", "green");
                 line(
-                    Position { x: 2, y: 0 },
-                    "I see what your made of! 🐣",
-                    "white",
+                    Position { x: 3, y: 0 },
+                    "Press m to start your journey! 🌇",
+                    "yellow",
                 );
+                if key_press(&app, "m") {
+                    has_starter = true;
+                }
             }
             if key_press(&app, "l") {
                 has_starter = true;
                 clear();
+                save.creatures.push(catalog[2].clone());
+                line(Position { x: 2, y: 0 }, "🐮 Dalius added to bag.", "green");
                 line(
-                    Position { x: 2, y: 0 },
-                    "I see what your made of! 🐣",
-                    "white",
+                    Position { x: 3, y: 0 },
+                    "Press m to start your journey! 🌇",
+                    "yellow",
                 );
+                if key_press(&app, "m") {
+                    has_starter = true;
+                }
+            }
+        }
+
+        if playing && has_starter {
+            clear();
+            print_keybind();
+            if key_press(&app, "m") {
+                render_world(save.pos.clone());
             }
         }
     }
